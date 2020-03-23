@@ -13,67 +13,72 @@ import com.whitestein.vaadin.widgets.wtpdfviewer.WTPdfViewer;
 @Connect(WTPdfViewer.class)
 public class WTPdfViewerConnector extends AbstractComponentConnector {
 
-	// ServerRpc is used to send events to server. Communication implementation
-	// is automatically created here
-	WTPdfViewerServerRpc rpc = RpcProxy.create(WTPdfViewerServerRpc.class, this);
+  // ServerRpc is used to send events to server. Communication implementation
+  // is automatically created here
+  WTPdfViewerServerRpc rpc = RpcProxy.create(WTPdfViewerServerRpc.class, this);
 
-	public WTPdfViewerConnector() {
+  @Override
+  protected void init () {
+    super.init();
 
-		// To receive RPC events from server, we register ClientRpc implementation 
-		registerRpc(WTPdfViewerClientRpc.class, new WTPdfViewerClientRpc() {
+    // To receive RPC events from server, we register ClientRpc implementation
+    registerRpc(WTPdfViewerClientRpc.class, new WTPdfViewerClientRpc() {
 
-			@Override
-			public void firstPage() {
-				getWidget().firstPage();
-			}
+      @Override
+      public void firstPage () {
+        getWidget().firstPage();
+      }
 
-			@Override
-			public void lastPage() {
-				getWidget().lastPage();
-			}
+      @Override
+      public void lastPage () {
+        getWidget().lastPage();
+      }
 
-			@Override
-			public void nextPage() {
-				getWidget().nextPage();
-			}
+      @Override
+      public void nextPage () {
+        getWidget().nextPage();
+      }
 
-			@Override
-			public void previousPage() {
-				getWidget().previousPage();
-			}
+      @Override
+      public void previousPage () {
+        getWidget().previousPage();
+      }
 
-			@Override
-			public void setPage(int page) {
-				getWidget().setPage(page);
-			}
-			
-			@Override
-			public void setShowPreviousViewOnLoad(boolean showPreviousViewOnLoad) {
-				getWidget().setShowPreviousViewOnLoad(showPreviousViewOnLoad);
-			}
-			
+      @Override
+      public void setPage (int page) {
+        getWidget().setPage(page);
+      }
 
-		});
-		
-		getWidget().setErrorListener(error -> rpc.onError(error));
-	}
+      @Override
+      public void setShowPreviousViewOnLoad (boolean showPreviousViewOnLoad) {
+        getWidget().setShowPreviousViewOnLoad(showPreviousViewOnLoad);
+      }
+    });
 
-	// We must implement getWidget() to cast to correct type 
-	// (this will automatically create the correct widget type)
-	@Override
-	public WTPdfViewerWidget getWidget() {
-		return (WTPdfViewerWidget) super.getWidget();
-	}
+    getWidget().setErrorListener(error -> rpc.onError(error));
+  }
 
-	// We must implement getState() to cast to correct type
-	@Override
-	public WTPdfViewerState getState() {
-		return (WTPdfViewerState) super.getState();
-	}
+  // We must implement getWidget() to cast to correct type
+  // (this will automatically create the correct widget type)
+  @Override
+  public WTPdfViewerWidget getWidget () {
+    return (WTPdfViewerWidget) super.getWidget();
+  }
 
-	@OnStateChange("resources")
-	void updateResource() {
-		getWidget().setResourceFile(getResourceUrl("resourceFile"));
-	}
+  @Override
+  public WTPdfViewerWidget createWidget () {
+    return new WTPdfViewerWidget(getConnection().translateVaadinUri("published:///pdf.worker.js"));
+  }
+
+  // We must implement getState() to cast to correct type
+  @Override
+  public WTPdfViewerState getState () {
+    return (WTPdfViewerState) super.getState();
+  }
+
+  @OnStateChange("resources")
+  void updateResource () {
+    getWidget().setResourceFile(getResourceUrl("resourceFile"));
+  }
 
 }
